@@ -4,10 +4,10 @@ Another hopeful way to organize my time
 
 ## Features
 
-- CLI
-  - Flags to register time to server later
-  - Flags to read reports
-  - Help flag to list available commands
+- [ ] CLI
+  - [ ] Flags to register time to server later
+  - [ ] Flags to read reports
+  - [ ] Help flag to list available commands
 
 - [ ] Reports
   - [ ] Daily minute goal represented with appropirate time format
