@@ -2,6 +2,7 @@
 import sys
 from flags import get_corresponding_flag_action
 
+
 given_flags = sys.argv
 given_flags.pop(0)
 

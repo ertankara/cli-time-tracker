@@ -5,3 +5,8 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
 
     return d
+
+
+def section_title(title: str):
+    print(title)
+    print('-' * len(title) + '-')

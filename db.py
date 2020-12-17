@@ -1,7 +1,11 @@
+from os import path
 import sqlite3
 from helper import dict_factory
 
-connection = sqlite3.connect('./db.sqlite')
+dir_parts = path.abspath(__file__).split('/')
+db_dir = '/'.join(dir_parts[:-1])
+
+connection = sqlite3.connect(db_dir + '/db.sqlite')
 connection.row_factory = dict_factory
 
 
