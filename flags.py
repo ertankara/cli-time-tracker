@@ -109,7 +109,7 @@ def register_time(cursor: Cursor, given_flag: str):
             )
             ''', (minutes_to_register, current_date, project['id']))
     except Exception as e:
-        print('An error occurred while registering time', e)
+        print('An error occurred while registering time, check --help', e)
         err = True
 
     return err
