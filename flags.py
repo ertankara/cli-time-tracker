@@ -4,9 +4,10 @@ from sqlite3 import Cursor
 
 
 class Action:
-    def __init__(self, fn, description):
+    def __init__(self, fn, description, requires_flag=False):
         self.fn = fn
         self.description = description
+        self.requires_flag = requires_flag
 
 
 flags = {
@@ -17,7 +18,7 @@ flags = {
     '-i': 'init_db',
     '--init': 'init_db',
     '--drop': 'drop_db',
-    '--p': 'new_project',
+    '-p': 'new_project',
     '--project': 'new_project',
     '--list': 'list_projects',
     '-l': 'list_projects'
@@ -30,7 +31,10 @@ def get_corresponding_flag_action(raw_flag: str):
     parsed_flag = raw_flag.split('=')[0]
     if parsed_flag in flag_keys:
         target_action = flags_to_actions[flags[parsed_flag]]
-        target_action.fn(raw_flag)
+        if target_action.requires_flag:
+            target_action.fn(raw_flag)
+        else:
+            target_action.fn()
     else:
         print(f'Unknown flag was received {parsed_flag}')
 
@@ -57,7 +61,7 @@ def register_time(cursor: Cursor, given_flag: str):
 
 
 @db.provide_cursor
-def init_db(cursor: Cursor, _):
+def init_db(cursor: Cursor):
     err = False
     try:
         cursor.execute('''
@@ -81,7 +85,7 @@ def init_db(cursor: Cursor, _):
 
 
 @db.provide_cursor
-def drop_db(cursor: Cursor, _):
+def drop_db(cursor: Cursor):
     err = False
     try:
         cursor.execute('''
@@ -114,7 +118,7 @@ def new_project(cursor: Cursor, given_flag: str):
 
 
 @db.provide_cursor
-def list_projects(cursor: Cursor, _):
+def list_projects(cursor: Cursor):
     err = False
     try:
         cursor.execute('SELECT name FROM projects')
@@ -130,10 +134,10 @@ def list_projects(cursor: Cursor, _):
 
 
 flags_to_actions = {
-    'add_time': Action(register_time, 'Registers time as "worked hour"'),
+    'add_time': Action(register_time, 'Registers time as "worked hour"', True),
     'drop_db': Action(drop_db, '__DANGEROUS__ Drops worked hour records and projects not undoable'),
     'init_db': Action(init_db, 'Creates necessary tables, has no effect if tables are created previously'),
     'help': Action(display_help_msg, 'Display available helper methods'),
     'list_projects': Action(list_projects, 'Lists existing projects'),
-    'new_project': Action(new_project, 'Creates a new project'),
+    'new_project': Action(new_project, 'Creates a new project', True),
 }
