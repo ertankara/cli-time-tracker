@@ -130,8 +130,8 @@ def list_projects(cursor, _):
 
 flags_to_actions = {
     'add_time': Action(register_time, 'Registers time as "worked hour"'),
-    'drop_db': Action(drop_db, '__DANGEROUS__ Drops worked hour records not undoable'),
-    'init_db': Action(init_db, 'Creates necessary models to track work'),
+    'drop_db': Action(drop_db, '__DANGEROUS__ Drops worked hour records and projects not undoable'),
+    'init_db': Action(init_db, 'Creates necessary tables, has no effect if tables are created previously'),
     'help': Action(display_help_msg, 'Display available helper methods'),
     'list_projects': Action(list_projects, 'Lists existing projects'),
     'new_project': Action(new_project, 'Creates a new project'),
