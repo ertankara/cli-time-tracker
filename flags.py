@@ -1,6 +1,7 @@
-import db
-from helper import section_title
+from datetime import datetime
 from sqlite3 import Cursor
+from helper import section_title, time_to_minutes
+from db import provide_cursor
 
 
 class Action:
@@ -43,24 +44,79 @@ def display_help_msg(_):
     print('Helper flag recieved')
 
 
-@db.provide_cursor
+def get_project_by_id(cursor: Cursor, project_id: int):
+    cursor.execute('SELECT id, name FROM projects WHERE id = ?', (project_id,))
+    project = cursor.fetchone()
+    return project
+
+
+def get_project_by_name(cursor: Cursor, project_name: str):
+    cursor.execute(
+        'SELECT id, name FROM projects WHERE name = ?', (project_name,))
+    project = cursor.fetchone()
+    return project
+
+
+@provide_cursor
 def register_time(cursor: Cursor, given_flag: str):
     err = False
 
     try:
-        raw_time, project_name = given_flag.split('@')
-        time = raw_time.split('=')[1]
+        flag_value = given_flag.split('=')[1]
+        time, project_name = flag_value.split('@')
+        is_id = True
+        project = None
+        current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        cursor.execute('''
+        try:
+            project_name = int(project_name)
+        except:
+            is_id = False
 
-        ''')
-    except:
+        minutes_to_register = time_to_minutes(time)
+
+        if minutes_to_register == None:
+            raise ValueError('Time format is not in specific format')
+
+        project = get_project_by_id(cursor,
+                                    project_name) if is_id else get_project_by_name(cursor, project_name)
+
+        if project == None:
+            print('Project does not exist creating it first...')
+            cursor.execute(
+                'INSERT INTO projects (name) VALUES (?)', (project_name,))
+
+            cursor.execute(
+                'SELECT id, name FROM projects WHERE name = ?', (project_name,))
+
+            project = get_project_by_name(cursor, project_name)
+
+            cursor.execute('''INSERT INTO work_sessions (
+                minutes,
+                date,
+                project_id
+            ) VALUES (
+                ?, ?, ?
+            )
+            ''', (minutes_to_register, current_date, project['id']))
+        else:
+            cursor.execute('''INSERT INTO work_sessions (
+                minutes,
+                date,
+                project_id
+            ) VALUES (
+                ?, ?, ?
+            )
+            ''', (minutes_to_register, current_date, project['id']))
+
+    except Exception as e:
+        print('An error occurred while registering time', e)
         err = True
 
     return err
 
 
-@db.provide_cursor
+@provide_cursor
 def init_db(cursor: Cursor):
     err = False
     try:
@@ -70,12 +126,13 @@ def init_db(cursor: Cursor):
                 name TEXT
             );
         ''')
+
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS hours (
+            CREATE TABLE IF NOT EXISTS work_sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount INTEGER NOT NULL,
-                date TEXT
-                project_id REFERENCES projects (id)
+                minutes INTEGER NOT NULL,
+                date TEXT,
+                project_id INTEGER REFERENCES projects (id)
             );
         ''')
     except:
@@ -84,7 +141,7 @@ def init_db(cursor: Cursor):
     return err
 
 
-@db.provide_cursor
+@provide_cursor
 def drop_db(cursor: Cursor):
     err = False
     try:
@@ -92,7 +149,7 @@ def drop_db(cursor: Cursor):
             DROP TABLE IF EXISTS projects
         ''')
         cursor.execute('''
-            DROP TABLE IF EXISTS hours
+            DROP TABLE IF EXISTS work_sessions
         ''')
     except:
         err = True
@@ -100,7 +157,7 @@ def drop_db(cursor: Cursor):
     return err
 
 
-@db.provide_cursor
+@provide_cursor
 def new_project(cursor: Cursor, given_flag: str):
     err = False
     try:
@@ -117,16 +174,16 @@ def new_project(cursor: Cursor, given_flag: str):
     return err
 
 
-@db.provide_cursor
+@provide_cursor
 def list_projects(cursor: Cursor):
     err = False
     try:
-        cursor.execute('SELECT name FROM projects')
+        cursor.execute('SELECT id, name FROM projects')
         projects = cursor.fetchall()
 
         section_title('Projects')
         for idx, p in enumerate(projects):
-            print(f"{idx + 1} - {p['name']}")
+            print(f"{idx + 1} - ({p['id']}) {p['name']}")
     except:
         err = True
 

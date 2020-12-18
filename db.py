@@ -19,7 +19,6 @@ def provide_cursor(fn):
     def wrapper(*args, **kwargs):
         err = fn(cursor, *args, **kwargs)
         if err:
-            print('execs this line', err)
             connection.rollback()
             cursor.close()
             return
