@@ -4,9 +4,9 @@ Another hopeful way to organize my time
 
 ## Features
 
-- [ ] CLI
+- [x] CLI
   - [x] Flags to register time to server later
-  - [ ] Flags to read reports
+  - [x] Flags to read reports
   - [x] Help flag to list available commands
 
 - [ ] Reports

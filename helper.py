@@ -35,3 +35,19 @@ def time_to_minutes(t: str):
         return total_minutes
     except:
         return None
+
+
+def minutes_to_time(m: int):
+    hours = m // 60
+    minutes = m % 60
+
+    output = ''
+
+    if hours > 0:
+        output += f'{hours}h'
+
+    if minutes > 0:
+        output += f'{minutes}m'
+
+    # 0m if hours are 0 as well
+    return output if len(output) > 0 else '0m'
