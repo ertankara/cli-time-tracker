@@ -1,5 +1,6 @@
 import db
 from helper import section_title
+from sqlite3 import Cursor
 
 
 class Action:
@@ -39,7 +40,7 @@ def display_help_msg(_):
 
 
 @db.provide_cursor
-def register_time(cursor, given_flag: str):
+def register_time(cursor: Cursor, given_flag: str):
     err = False
 
     try:
@@ -56,7 +57,7 @@ def register_time(cursor, given_flag: str):
 
 
 @db.provide_cursor
-def init_db(cursor, _):
+def init_db(cursor: Cursor, _):
     err = False
     try:
         cursor.execute('''
@@ -80,7 +81,7 @@ def init_db(cursor, _):
 
 
 @db.provide_cursor
-def drop_db(cursor, _):
+def drop_db(cursor: Cursor, _):
     err = False
     try:
         cursor.execute('''
@@ -96,15 +97,15 @@ def drop_db(cursor, _):
 
 
 @db.provide_cursor
-def new_project(cursor, given_flag: str):
+def new_project(cursor: Cursor, given_flag: str):
     err = False
     try:
         project_name = given_flag.split('=')[1]
 
         cursor.execute('''
             INSERT INTO projects (name) VALUES (?)
-        ''', (project_name, ))
-        cursor.execute('SELECT * FROM projects')
+        ''', (project_name,))
+
         print(f'{project_name} created successfully!')
     except:
         err = True
@@ -113,7 +114,7 @@ def new_project(cursor, given_flag: str):
 
 
 @db.provide_cursor
-def list_projects(cursor, _):
+def list_projects(cursor: Cursor, _):
     err = False
     try:
         cursor.execute('SELECT name FROM projects')
