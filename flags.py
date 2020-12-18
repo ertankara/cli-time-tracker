@@ -235,14 +235,13 @@ def set_goal(cursor: Cursor, given_flag: str):
 
 
 def get_daily_report(cursor: Cursor):
-    cursor.execute('''
-        SELECT
-            (SELECT goal FROM daily_goal) AS daily_goal,
-            (
-                SELECT SUM(ws.minutes)
-                FROM work_sessions AS ws
-                WHERE strftime('%Y-%m-%d', date('now')) = strftime('%Y-%m-%d', ws.date)
-            ) AS todays_total
+    cursor.execute(''' SELECT
+        (SELECT goal FROM daily_goal) AS daily_goal,
+        (
+            SELECT SUM(ws.minutes)
+            FROM work_sessions AS ws
+            WHERE strftime('%Y-%m-%d', date('now')) = strftime('%Y-%m-%d', ws.date)
+        ) AS todays_total
 
     ''')
 
@@ -278,6 +277,10 @@ def get_daily_report(cursor: Cursor):
     print(formatted_remaining_time)
 
 
+def get_weekly_report(cursor: Cursor):
+    pass
+
+
 def get_monthly_report(cursor: Cursor):
     print('Monthly')
 
@@ -293,6 +296,8 @@ def read_report(cursor: Cursor, given_flag: str):
 
     if flag_value == 'd':
         get_daily_report(cursor)
+    elif flag_value == 'w':
+        get_weekly_report(cursor)
     elif flag_value == 'm':
         get_monthly_report(cursor)
     elif flag_value == 'y':
