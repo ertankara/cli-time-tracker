@@ -69,7 +69,7 @@ def get_project_by_id(cursor: Cursor, project_id: int):
 
 def get_project_by_name(cursor: Cursor, project_name: str):
     cursor.execute(
-        'SELECT id, name FROM projects WHERE name = ?', (project_name,))
+        'SELECT id, name FROM projects WHERE LOWER(name) = ?', (project_name.lower(),))
     project = cursor.fetchone()
     return project
 
