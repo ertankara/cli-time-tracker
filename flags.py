@@ -40,8 +40,21 @@ def get_corresponding_flag_action(raw_flag: str):
         print(f'Unknown flag was received {parsed_flag}')
 
 
-def display_help_msg(_):
-    print('Helper flag recieved')
+def display_help_msg():
+    global flags
+    actions = {}
+
+    for cli_flag, action in flags.items():
+        if actions.get(action, None) is None:
+            actions[action] = cli_flag
+        else:
+            actions[action] = f'{cli_flag}, {actions.get(action)}'
+
+    max_len = max(map(lambda x: len(x), actions.values()))
+
+    for action, flags in actions.items():
+        spaces = (max_len - len(flags)) * ' '
+        print(f'{flags} {spaces} {flags_to_actions[action].description}')
 
 
 def get_project_by_id(cursor: Cursor, project_id: int):
