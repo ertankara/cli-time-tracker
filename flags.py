@@ -76,7 +76,7 @@ def register_time(cursor: Cursor, given_flag: str):
         minutes_to_register = time_to_minutes(time)
 
         if minutes_to_register == None:
-            raise ValueError('Time format is not in specific format')
+            raise ValueError('Time format is not in specified format')
 
         project = get_project_by_id(cursor,
                                     project_name) if is_id else get_project_by_name(cursor, project_name)
@@ -108,7 +108,6 @@ def register_time(cursor: Cursor, given_flag: str):
                 ?, ?, ?
             )
             ''', (minutes_to_register, current_date, project['id']))
-
     except Exception as e:
         print('An error occurred while registering time', e)
         err = True
